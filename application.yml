@@ -1,24 +1,28 @@
 # Lavalink v4 config for Railway (alcapone music node).
-# Secrets (password + Spotify keys) are set as Railway VARIABLES, not here,
-# so they never live in your GitHub repo. See README.md.
-
+# Deezer-primary setup (same source bleed uses), SoundCloud fallback.
+# No YouTube, no OAuth — nothing to expire or crash.
+#
+# Secrets are set as Railway VARIABLES, never in this file:
+#   LAVALINK_SERVER_PASSWORD
+#   PLUGINS_LAVASRC_SPOTIFY_CLIENTID
+#   PLUGINS_LAVASRC_SPOTIFY_CLIENTSECRET
+#   PLUGINS_LAVASRC_DEEZER_MASTERDECRYPTIONKEY   <-- you must obtain this
+#   PLUGINS_LAVASRC_DEEZER_ARL                   <-- you must obtain this (free Deezer account)
 server:
   port: 2333
   address: 0.0.0.0          # must be 0.0.0.0 inside a container
-
 lavalink:
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"   # latest: github.com/lavalink-devs/youtube-source/releases
-      snapshot: false
+    # LavaSrc handles Spotify metadata + Deezer streaming. No YouTube plugin.
     - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"  # latest: github.com/topi314/LavaSrc/releases
       repository: "https://maven.lavalink.dev/releases"
       snapshot: false
   server:
     password: "youshallnotpass"   # OVERRIDDEN by the LAVALINK_SERVER_PASSWORD Railway variable
     sources:
-      youtube: false               # handled by youtube-plugin above
+      youtube: false               # YouTube disabled — it blocks bots
       bandcamp: true
-      soundcloud: true
+      soundcloud: true             # fallback source — no auth required
       twitch: true
       vimeo: true
       http: true
@@ -35,39 +39,27 @@ lavalink:
       channelMix: true
       lowPass: true
     bufferDurationMs: 400
-    youtubePlaylistLoadLimit: 6
-
 plugins:
-  youtube:
-    enabled: true
-    # OAuth makes YouTube treat the node like a signed-in user, which fixes the
-    # "video requires login / all clients failed" playback errors.
-    oauth:
-      enabled: true
-      # After the FIRST boot, copy the refreshToken from the Railway logs and paste
-      # it here (uncommented), then redeploy — so it doesn't re-prompt every restart.
-      refreshToken: "1//06dc19ukVjuGJCgYIARAAGAYSNwF-L9Ir5n1ErdZ1fgi6bM98jb2QcroYt5sTYgVqkFuIQFNUwA1lldocGt8E2UQwas90a8s5nEs"
-    clients:
-      - MUSIC        # search (ytmsearch)
-      - WEB          # loading + playback
-      - WEBEMBEDDED  # playback fallback
-      - TV           # OAuth-backed playback — this is the one that uses your sign-in
-      - ANDROID_VR   # fallback
   lavasrc:
     sources:
-      spotify: true
+      spotify: true       # resolves Spotify links/search -> played via providers below
+      deezer: true        # PRIMARY source (full streaming)
       applemusic: false
-      deezer: false
     spotify:
       clientId: ""        # set via PLUGINS_LAVASRC_SPOTIFY_CLIENTID Railway variable
       clientSecret: ""    # set via PLUGINS_LAVASRC_SPOTIFY_CLIENTSECRET Railway variable
       countryCode: "US"
       playlistLoadLimit: 6
       albumLoadLimit: 6
+    deezer:
+      masterDecryptionKey: ""   # set via PLUGINS_LAVASRC_DEEZER_MASTERDECRYPTIONKEY Railway variable
+      arl: ""                   # set via PLUGINS_LAVASRC_DEEZER_ARL Railway variable
+      formats: [ "MP3_128", "MP3_64" ]   # free ARL only. Premium ARL can add MP3_320/MP3_256/FLAC.
+    # Track resolution order: Deezer by ISRC, then Deezer search, then SoundCloud as fallback.
     providers:
-      - "ytsearch:\"%ISRC%\""
-      - "ytsearch:%QUERY%"
-
+      - "dzisrc:%ISRC%"
+      - "dzsearch:%QUERY%"
+      - "scsearch:%QUERY%"
 logging:
   level:
     root: INFO
