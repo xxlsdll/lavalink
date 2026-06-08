@@ -8,9 +8,9 @@ server:
 
 lavalink:
   plugins:
-    - dependency: "dev.lavalink.youtube:youtube-plugin:1.13.5"   # latest: github.com/lavalink-devs/youtube-source/releases
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.1"   # latest: github.com/lavalink-devs/youtube-source/releases
       snapshot: false
-    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.0"  # latest: github.com/topi314/LavaSrc/releases
+    - dependency: "com.github.topi314.lavasrc:lavasrc-plugin:4.8.3"  # latest: github.com/topi314/LavaSrc/releases
       repository: "https://maven.lavalink.dev/releases"
       snapshot: false
   server:
@@ -38,6 +38,21 @@ lavalink:
     youtubePlaylistLoadLimit: 6
 
 plugins:
+  youtube:
+    enabled: true
+    # OAuth makes YouTube treat the node like a signed-in user, which fixes the
+    # "video requires login / all clients failed" playback errors.
+    oauth:
+      enabled: true
+      # After the FIRST boot, copy the refreshToken from the Railway logs and paste
+      # it here (uncommented), then redeploy — so it doesn't re-prompt every restart.
+      # refreshToken: "PASTE_REFRESH_TOKEN_HERE"
+    clients:
+      - MUSIC
+      - WEBEMBEDDED
+      - TVHTML5EMBEDDED
+      - WEB
+      - ANDROID_VR
   lavasrc:
     sources:
       spotify: true
