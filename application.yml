@@ -48,11 +48,11 @@ plugins:
       # it here (uncommented), then redeploy — so it doesn't re-prompt every restart.
       # refreshToken: "PASTE_REFRESH_TOKEN_HERE"
     clients:
-      - MUSIC
-      - WEBEMBEDDED
-      - TVHTML5EMBEDDED
-      - WEB
-      - ANDROID_VR
+      - MUSIC        # search (ytmsearch)
+      - WEB          # loading + playback
+      - WEBEMBEDDED  # playback fallback
+      - TV           # OAuth-backed playback — this is the one that uses your sign-in
+      - ANDROID_VR   # fallback
   lavasrc:
     sources:
       spotify: true
