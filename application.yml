@@ -46,7 +46,7 @@ plugins:
       enabled: true
       # After the FIRST boot, copy the refreshToken from the Railway logs and paste
       # it here (uncommented), then redeploy — so it doesn't re-prompt every restart.
-      # refreshToken: "PASTE_REFRESH_TOKEN_HERE"
+      refreshToken: "1//06dc19ukVjuGJCgYIARAAGAYSNwF-L9Ir5n1ErdZ1fgi6bM98jb2QcroYt5sTYgVqkFuIQFNUwA1lldocGt8E2UQwas90a8s5nEs"
     clients:
       - MUSIC        # search (ytmsearch)
       - WEB          # loading + playback
